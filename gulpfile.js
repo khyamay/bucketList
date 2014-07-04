@@ -28,6 +28,11 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
+gulp.task('reload', function (){
+  return gulp.src(['www/index.html'])
+    .pipe(connect.reload());
+});
+
 gulp.task('watch', function() {
  // gulp.watch(paths.sass, ['sass']);
  gulp.watch([paths.www], ['reload']);

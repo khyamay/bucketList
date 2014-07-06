@@ -17,7 +17,7 @@ angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
     }
 
     $rootScope.userEmail = null;
-    $rootScope.baseUrl = 'https://bucket-list-app.firebaseio.com/';
+    $rootScope.baseUrl = 'https://bucket-list.firebaseio.com/';
 
     var authRef = new Firebase($rootScope.baseUrl);
     $rootScope.auth = $firebaseAuth(authRef);

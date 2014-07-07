@@ -146,4 +146,34 @@ angular.module('bucketList.controllers', [])
 				email = email.replace(/\./g, ',');
 				return email.trim();
 		}
-	});
+	})
+	.controller('newCtrl', function ($rootScope, $scope, $window, $firebase){
+		$scope.data = {
+			item: ''
+		};
+
+		$scope.close = function (){
+			$scope.modal.hide();
+		};
+
+		$scope.createNew = function (){
+			var item = this.data.time;
+
+			if(!item) return;
+
+			$scope.modal.hide();
+			$rootScope.show();
+			$rootScope.show('Please wait.. creating new');
+
+			var form = {
+				item: item,
+				isCompleted: false,
+				created: Date.now();
+				updated: Date.now();
+			};
+
+			var bucketListRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail));
+				$firebase(bucketListRef).$add(form);
+				$rootScope.hide();			
+		}
+	})

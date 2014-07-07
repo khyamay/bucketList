@@ -76,3 +76,74 @@ angular.module('bucketList.controllers', [])
 			});
 		}
 	}])
+	.controller('myListCtrl', function ($rootScope, $scope, $window, $ionicModal, $firebase){
+		$rootScope.show('Please Wait... Processing');
+		$scope.list = [];
+		var bucketListRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail));
+		bucketListRef.on('value', function (snapshot){
+			var data = snapshot.val();
+			$scope.list = [];
+
+			for (var key in data){
+				if (data.hasOwnProperty(key)){
+					if (data[key].isCompleted == false){
+						data[key].key = key;
+						$scope.list.push(data[key]);
+					}
+				}
+			}
+
+			if ($scope.list.length == 0){
+				$scope.noData = true;
+			} else {
+				$scope.noData = false;
+			}
+			$rootScope.hide();
+		});
+
+		$ionicModal.fromTemplateUrl('templates/newItem.html', function (modal){
+			$scope.newTemplate = modal;
+		});
+
+		$scope.newTask = function (){
+			$scope.newTempalte.show();
+		};
+
+		$scope.markCompleted = function (key){
+			$rootScope.show('Please wait.. Updating list');
+			var itemRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail)+ '/' + key);
+			
+			itemRef.update({
+				isCompleted: true;
+			}, function (error){
+				if (error){
+					$rootScope.hide();
+					$rootScope.notify('Opps something went wrong. Try again');
+				} else {
+					$rootScope.hide();
+					$rootScope.notify('Successfully Updated');
+				}
+			});
+		};
+
+		$scope.deleteItem = function (key){
+			$rootScope.show('Please wait... Deleting from the list');
+			var itemRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail));
+			bucketListRef.child(key).remove(function (error){
+				if (error){
+					$rootScope.hide();
+					$rootScope.notify('Opps Something went wrong. Try it again');
+				} else {
+					$rootScope.hide();
+					$rootScope.notify('Successfully Deleted.');
+				}
+			})
+		}
+
+		function escapeEmailAddress(email){
+			if (!email) return false
+				email = email.toLowercase();
+				email = email.replace(/\./g, ',');
+				return email.trim();
+		}
+	});

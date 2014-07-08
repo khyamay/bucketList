@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase, $window, $ionicLoading) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -17,7 +17,7 @@ angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
     }
 
     $rootScope.userEmail = null;
-    $rootScope.baseUrl = 'https://bucket-list.firebaseio.com/';
+    $rootScope.baseUrl = 'https://bucket-list.firebaseio.com';
 
     var authRef = new Firebase($rootScope.baseUrl);
     $rootScope.auth = $firebaseAuth(authRef);
@@ -42,6 +42,11 @@ angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
       }, 1999);
     };
 
+    $rootScope.logout = function(){
+      $rootScope.auth.$logout();
+      $rootScope.checkSession();
+    };
+
     $rootScope.checkSession = function (){
       var auth = new FirebaseSimpleLogin(authRef, function (error, user){
         if (error){
@@ -52,7 +57,7 @@ angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
           $window.location.href = ('#/bucket/list');
         }else {
           $rootScope.userEmail = null;
-          $window.location.href= "#/auth/signin"
+          $window.location.href= "#/auth/signin";
         }
       });
     }
@@ -65,16 +70,16 @@ angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
       abstract: true,
       templateUrl: 'templates/auth.html'
     })
-    .state('auth-signin', {
+    .state('auth.signin', {
       url: '/signin',
       views: {
         'auth-signin': {
           templateUrl: 'templates/auth-signin.html',
-          controllers: 'SigninCtrl'
+          controller: 'SignInCtrl'
         }
       }
     })
-    .state('auth-signup', {
+    .state('auth.signup', {
       url: '/signup',
       views: {
         'auth-signup': {
@@ -106,5 +111,5 @@ angular.module('bucketList', ['ionic', 'firebase', 'bucketList.controllers'])
         }
       }
     })
-    .otherWise('/auth/signin');
+    $urlRouterProvider.otherwise('/auth/signin');
 });

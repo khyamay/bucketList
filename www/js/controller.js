@@ -114,7 +114,7 @@ angular.module('bucketList.controllers', [])
 			var itemRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail)+ '/' + key);
 			
 			itemRef.update({
-				isCompleted: true;
+				isCompleted: true
 			}, function (error){
 				if (error){
 					$rootScope.hide();
@@ -140,12 +140,6 @@ angular.module('bucketList.controllers', [])
 			})
 		}
 
-		function escapeEmailAddress(email){
-			if (!email) return false
-				email = email.toLowercase();
-				email = email.replace(/\./g, ',');
-				return email.trim();
-		}
 	})
 	.controller('newCtrl', function ($rootScope, $scope, $window, $firebase){
 		$scope.data = {
@@ -168,8 +162,8 @@ angular.module('bucketList.controllers', [])
 			var form = {
 				item: item,
 				isCompleted: false,
-				created: Date.now();
-				updated: Date.now();
+				created: Date.now(),
+				updated: Date.now()
 			};
 
 			var bucketListRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail));
@@ -185,24 +179,23 @@ angular.module('bucketList.controllers', [])
 		bucketListRef.on('value', function (snapshot){
 			$scope.list = [];
 			var data = snapshot.val();
-		});
 
 			for (var key in data) {
-	      if (data.hasOwnProperty(key)) {
-	        if (data[key].isCompleted == true) {
-	          data[key].key = key;
-	          $scope.list.push(data[key]);
-	        }
-	      }
-	    }
-	    if ($scope.list.length == 0) {
-	      $scope.noData = true;
-	    } else {
-	      $scope.noData = false;
-	    }
+	      		if (data.hasOwnProperty(key)) {
+	        		if (data[key].isCompleted == true) {
+	          			data[key].key = key;
+	         		 	$scope.list.push(data[key]);
+	        			}
+	      			}
+	    		}
+	    		if ($scope.list.length == 0) {
+	      		$scope.noData = true;
+	    			} else {
+	      				$scope.noData = false;
+	    			}
 	 
-	    $rootScope.hide();
-	  });
+	    		$rootScope.hide();
+	  			});
 	 
 	  $scope.deleteItem = function(key) {
 	    $rootScope.show("Please wait... Deleting from List");
@@ -217,4 +210,11 @@ angular.module('bucketList.controllers', [])
 	      }
 	    });
   	};
-})
+});
+
+function escapeEmailAddress(email){
+			if (!email) return false
+				email = email.toLowercase();
+				email = email.replace(/\./g, ',');
+				return email.trim();
+		}
